@@ -7,7 +7,7 @@ build-job:
     stage: build
     script:
      - docker build -t webpictweak ./WebPicTweak/
-     - docker build -t client ./tweaksite/
+     - docker build -t client ./WebPicTweak/tweaksite/
      - docker build -t nginx:mainline
 
 deploy-job:
