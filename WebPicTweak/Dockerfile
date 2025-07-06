@@ -9,8 +9,8 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["./WebPicTweak.csproj", "WebPicTweak/"]
-RUN dotnet restore "./WebPicTweak.csproj"
+COPY ["./WebPicTweak/WebPicTweak.csproj", "WebPicTweak/"]
+RUN dotnet restore "./WebPicTweak/WebPicTweak.csproj"
 COPY . .
 WORKDIR "/src/WebPicTweak"
 RUN dotnet build "./WebPicTweak.csproj" -c $BUILD_CONFIGURATION -o /app/build
