@@ -1,0 +1,19 @@
+version: '3.4'
+
+services:
+  backend:
+    image: ${DOCKER_REGISTRY-}webpictweak
+    build:
+      context: .
+      dockerfile: WebPicTweak/Dockerfile
+
+  client:
+    image: client
+    build:
+      context: ./WebPicTweak/tweaksite
+      dockerfile: Dockerfile
+  
+  proxy:
+    image: nginx:mainline
+
+
