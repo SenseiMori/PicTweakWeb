@@ -12,7 +12,7 @@ WORKDIR /src
 COPY ["WebPicTweak.csproj", "./"]
 RUN dotnet restore "./WebPicTweak.csproj"
 COPY . .
-WORKDIR "/src/WebPicTweak"
+WORKDIR "/src"
 RUN dotnet build "./WebPicTweak.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
