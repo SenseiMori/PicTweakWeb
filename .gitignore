@@ -249,3 +249,4 @@ ServiceFabricBackup/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+/tweaksite/node_modules
