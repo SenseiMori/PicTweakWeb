@@ -21,7 +21,8 @@ services:
      depends_on:
        - backend
        - client
-     volumes: 
-       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
      ports:
        - "80:80"
+     configs:
+      - source: nginx-defaultserver
+        target: /etc/nginx/conf.d/default.conf
