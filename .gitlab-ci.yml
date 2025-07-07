@@ -30,18 +30,7 @@ deploy:
     - mkdir -p ~/.ssh
     - chmod 700 ~/.ssh
     - ssh-keyscan -H $DEPLOY_SERVER >> ~/.ssh/known_hosts
-
-    - echo "=== ping $DEPLOY_SERVER ==="
-    - ping -c 3 $DEPLOY_SERVER || (echo "PING FAILED" && exit 1)
-
-    # Отладка: verbose ssh-keyscan с выводом
-    - echo "=== ssh-keyscan ==="
-    - ssh-keyscan -v -H $DEPLOY_SERVER >> ~/.ssh/known_hosts 2>&1 || (echo "KEYSCAN FAILED" && exit 1)
-
-    # Отладка: покажем содержимое known_hosts
-    - echo "=== known_hosts ==="
-    - cat ~/.ssh/known_hosts
   script:
-    - ssh -vvv $DEPLOY_USER@$DEPLOY_SERVER "cd $DEPLOY_PATH && git pull && docker compose down && docker compose up -d"
+    - ssh $DEPLOY_USER@$DEPLOY_SERVER "cd $DEPLOY_PATH && git pull && docker compose up -d"
 
   
