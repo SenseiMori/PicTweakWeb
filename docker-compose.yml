@@ -10,7 +10,7 @@ services:
   client:
     image: client
     build:
-      context: ./WebPicTweak/tweaksite/
+      context: ./tweaksite/
       dockerfile: Dockerfile
   
   proxy:
