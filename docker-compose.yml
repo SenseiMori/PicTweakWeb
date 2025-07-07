@@ -6,6 +6,7 @@ services:
     build:
       context: .
       dockerfile: WebPicTweak/Dockerfile
+        
 
   client:
     image: client
@@ -23,8 +24,8 @@ services:
   proxy:
     image: nginx:alpine
     ports:
-      - 80:80
-      - 443:443
+      - 4040:80
+
     depends_on:
       - client
       - backend
@@ -55,8 +56,14 @@ configs:
   nginx-defaultserver:
     content: |
       upstream backend {
-        server back-api:8000;
-        resolver 127.0.0.11 valid=30s;
+        server host.docker.internal:8000;
+        resolver 127.0.0.1 valid=30s;
+        resolver_timeout 5s;
+      }
+
+      upstream client {
+        server host.docker.internal:5002;
+        resolver 127.0.0.1 valid=30s;
         resolver_timeout 5s;
       }
 
@@ -76,6 +83,14 @@ configs:
 
         location /api/ {
           proxy_pass http://backend;
+          proxy_set_header Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        location / {
+          proxy_pass http://client;
           proxy_set_header Host $host;
           proxy_set_header X-Real-IP $remote_addr;
           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
