@@ -19,17 +19,18 @@ build:
 
 deploy:
   stage: deploy
+  image: alpine:latest
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
       when: always
   before_script:
-  - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
-  - eval $(ssh-agent -s)
-  - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
-  - mkdir -p ~/.ssh
-  - chmod 700 ~/.ssh
-  - ssh-keyscan -H $DEPLOY_SERVER >> ~/.ssh/known_hosts
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan -H $DEPLOY_SERVER >> ~/.ssh/known_hosts
   script:
-    - ssh $DEPLOY_USER@$DEPLOY_SERVER "cd $DEPLOY_PATH && git pull && docker compose down && docker compose up -d"
+    - ssh -vvv $DEPLOY_USER@$DEPLOY_SERVER "cd $DEPLOY_PATH && git pull && docker compose down && docker compose up -d"
 
   
