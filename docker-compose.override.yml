@@ -17,7 +17,7 @@ services:
      ports:
       - "5002:3000"
   
-  proxy:
+  nginx:
      depends_on:
        - backend
        - client
