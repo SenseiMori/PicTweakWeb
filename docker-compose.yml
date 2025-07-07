@@ -20,7 +20,7 @@ services:
     volumes:
       - /etc/letsencrypt:/etc/letsencrypt:Z
 
-  nginx:
+  proxy:
     image: nginx:alpine
     ports:
       - 80:80
