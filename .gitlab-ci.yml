@@ -2,16 +2,19 @@ stages:
   - build
   - deploy
 
-
-build:
-  stage: build
-  script:
-    - docker compose build
-
 variables:
   DEPLOY_USER: mori
   DEPLOY_SERVER: 79.133.182.202
   DEPLOY_PATH: /home/mori/PTW/
+
+build:
+  stage: build
+  image: docker:latest
+  before_script:
+    - docker info
+  script:
+    - docker compose build
+
 
 before_script:
   - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
@@ -23,9 +26,10 @@ before_script:
 
 deploy:
   stage: deploy
-  only:
-    - master
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: always
   script:
-    - ssh $mori@$79.133.182.202 "cd $/home/mori/PTW/ && git pull && docker compose down && docker compose up -d"
+    - ssh $DEPLOY_USER@$DEPLOY_SERVER "cd $DEPLOY_PATH && git pull && docker compose down && docker compose up -d"
 
   
