@@ -4,7 +4,7 @@ services:
   backend:
     image: ${DOCKER_REGISTRY-}webpictweak
     build:
-      context: .
+      context: ./WebPicTweak
       dockerfile: WebPicTweak/Dockerfile
 
   client:
