@@ -8,8 +8,24 @@ build:
   script:
     - docker compose build
 
+variables:
+  DEPLOY_USER: mori
+  DEPLOY_SERVER: 79.133.182.202
+  DEPLOY_PATH: /home/mori/PTW/
+
+before_script:
+  - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+  - eval $(ssh-agent -s)
+  - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+  - mkdir -p ~/.ssh
+  - chmod 700 ~/.ssh
+  - ssh-keyscan -H $DEPLOY_SERVER >> ~/.ssh/known_hosts
+
 deploy:
   stage: deploy
+  only:
+    - master
   script:
-    - docker compose down
-    - docker compose up -d
+    - ssh $mori@$79.133.182.202 "cd $/home/mori/PTW/ && git pull && docker compose down && docker compose up -d"
+
+  
