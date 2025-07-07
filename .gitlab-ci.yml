@@ -3,9 +3,9 @@ stages:
   - deploy
 
 variables:
-  DEPLOY_USER: mori
-  DEPLOY_SERVER: 79.133.182.202
-  DEPLOY_PATH: /home/mori/PTW/
+  DEPLOY_USER: "mori"
+  DEPLOY_SERVER: "79.133.182.202"
+  DEPLOY_PATH: "/home/mori/PTW/"
 
 build:
   stage: build
