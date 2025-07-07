@@ -24,7 +24,7 @@ deploy:
     - if: '$CI_COMMIT_BRANCH == "master"'
       when: always
   before_script:
-    - 'which ssh-agent || ( apk-get update -y && apk-get install openssh-client -y )'
+    - apk add --no-cache openssh-client git bash
     - eval $(ssh-agent -s)
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
     - mkdir -p ~/.ssh
