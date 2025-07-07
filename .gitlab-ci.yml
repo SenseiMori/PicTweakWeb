@@ -3,14 +3,13 @@ stages:
   - deploy
 
 
-build-job:
-    stage: build
-    script:
-     - docker build -t webpictweak ./WebPicTweak/
-     - docker build -t client ./tweaksite/
-     - docker build -t nginx:mainline
+build:
+  stage: build
+  script:
+    - docker compose build
 
-deploy-job:
-    stage: deploy
-    script:
-     - docker compose up -d
+deploy:
+  stage: deploy
+  script:
+    - docker compose down
+    - docker compose up -d
