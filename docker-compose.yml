@@ -21,7 +21,7 @@ services:
       - /etc/letsencrypt:/etc/letsencrypt:Z
 
   nginx:
-    image: nginx:latest
+    image: nginx:alpine
     ports:
       - 80:80
       - 443:443

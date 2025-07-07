@@ -18,7 +18,10 @@ services:
       - "5002:3000"
   
   proxy:
+     depends_on:
+       - backend
+       - client
      volumes: 
-       - ./nginx.conf:/etc/nginx/nginx.conf
+       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
      ports:
        - "80:80"
