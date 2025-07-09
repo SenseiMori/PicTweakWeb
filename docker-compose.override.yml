@@ -23,5 +23,3 @@ services:
        - client
      ports:
        - "4040:80"
-     volumes:
-       - /nginx/
