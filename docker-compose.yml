@@ -74,7 +74,7 @@ configs:
   nginx-defaultserver:
    content: | 
         upstream backend {
-         server backend:8000;
+         server backend:5000;
          resolver 127.0.0.1 valid=30s;
          resolver_timeout 5s;
          }
