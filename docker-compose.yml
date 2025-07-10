@@ -19,7 +19,7 @@ services:
     entrypoint: /bin/sh
     command: -c 'test -f /etc/letsencrypt/ssl-dhparams.pem || openssl dhparam -out /etc/letsencrypt/ssl-dhparams.pem 4096'
     volumes:
-      - /etc/letsencrypt:/etc/letsencrypt:Z
+      - cert_volume:/etc/letsencrypt:Z
 
   certbot-oneshot:
     image: docker.io/certbot/certbot
