@@ -15,7 +15,7 @@ services:
       dockerfile: Dockerfile
   
   init-dhparams:
-    image: certbot/certbot
+    image: docker.io/certbot/certbot
     entrypoint: /bin/sh
     command: -c 'test -f /etc/letsencrypt/ssl-dhparams.pem || openssl dhparam -out /etc/letsencrypt/ssl-dhparams.pem 4096'
     volumes:
