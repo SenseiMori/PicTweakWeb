@@ -11,8 +11,6 @@ variables:
 build:
   stage: build
   image: docker:latest
-  before_script:
-    - docker info
   script:
     - docker compose build
 
