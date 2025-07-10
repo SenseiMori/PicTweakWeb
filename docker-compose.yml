@@ -25,7 +25,7 @@ services:
     image: docker.io/certbot/certbot
     restart: "no"
     entrypoint: /bin/sh
-    command: -c 'test -d /etc/letsencrypt/live/tweakypro.ru || certbot certonly  --standalone --staging --register-unsafely-without-email -d "tweakypro.ru" --rsa-key-size 4096 --agree-tos --force-renewal'
+    command: -c 'test -d /etc/letsencrypt/live/tweakypro.ru/ || certbot certonly  --standalone --staging --register-unsafely-without-email -d "tweakypro.ru" --rsa-key-size 4096 --agree-tos --force-renewal'
     ports:
       - 80:80
     volumes:
