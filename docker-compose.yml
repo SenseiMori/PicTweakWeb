@@ -39,7 +39,7 @@ services:
     entrypoint: /bin/sh
     command: -c 'while :; do sleep 6h && wait $${!}; nginx -s reload; done & nginx -g "daemon off;"'
     ports:
-      - 4040:80
+      - 80:80
     depends_on:
       init-dhparams:
         condition: service_completed_successfully
