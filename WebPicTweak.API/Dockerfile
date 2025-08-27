@@ -26,7 +26,7 @@ ENTRYPOINT ["dotnet", "WebPicTweak.API.dll"]
 
 FROM base AS final
 WORKDIR /app
-COPY --from=publish /app/publish .
+COPY --from=base /app/publish .
 ENTRYPOINT ["dotnet", "WebPicTweak.API.dll"]
 
 ## =============================
