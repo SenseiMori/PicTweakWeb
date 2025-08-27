@@ -30,7 +30,7 @@ namespace WebPicTweak.Application.Services.ImageServices
         }
         public Task<bool> DeleteAsync(string filePath)
         {
-            string path = Path.Combine(_basePath, filePath);
+            string path = Path.Combine("/localdata/images", filePath);
             if (!File.Exists(path))
             {
                 return Task.FromResult(false);
