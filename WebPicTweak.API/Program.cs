@@ -32,7 +32,7 @@ builder.Services.AddHttpLogging(logging =>
 });
 builder.Services.Configure<StorageOptions>(options =>
 {
-    options.ImagesStorage = Environment.GetEnvironmentVariable("STORAGE_PATH") ?? string.Empty;
+    options.ImagesStorage = Environment.GetEnvironmentVariable("STORAGE_PATH") ?? "/localdata/images";
 });
 
 

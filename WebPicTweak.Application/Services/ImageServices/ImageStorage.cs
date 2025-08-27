@@ -14,7 +14,7 @@ namespace WebPicTweak.Application.Services.ImageServices
             _basePath = options.Value.ImagesStorage;
 
             if (!Directory.Exists(_basePath))
-                Directory.CreateDirectory(_basePath);
+                Directory.CreateDirectory("/localdata/images");
         }
 
         public async Task<string> SaveAsync(IFormFile file)
