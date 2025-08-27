@@ -5,13 +5,13 @@ services:
     image: ${DOCKER_REGISTRY-}webpictweak
     build:
       context: .
-      dockerfile: WebPicTweak/Dockerfile
+      dockerfile: ./WebPicTweak/Dockerfile
         
 
   client:
     image: client
     build:
-      context: ./tweaksite/
+      context: ./Frontend/frontend
       dockerfile: Dockerfile
   
   init-dhparams:
@@ -25,7 +25,7 @@ services:
     image: docker.io/certbot/certbot
     restart: "no"
     entrypoint: /bin/sh
-    command: -c 'test -d /etc/letsencrypt/live/tweakypro.ru/ || certbot certonly  --standalone --staging --register-unsafely-without-email -d "tweakypro.ru" --rsa-key-size 4096 --agree-tos --force-renewal'
+    command: -c 'test -d /etc/letsencrypt/live/${BASE_DOMAIN:-example.ru} || certbot certonly --standalone --staging --register-unsafely-without-email -d "${BASE_DOMAIN:-example.ru}" --rsa-key-size ${rsa_key_size:-2048} --agree-tos --force-renewal'
     ports:
       - 80:80
     volumes:
@@ -100,7 +100,7 @@ configs:
          }
 
         location /api/ {
-          proxy_pass http://backend/api/;
+          proxy_pass http://backend/api;
           proxy_set_header Host $host;
           proxy_set_header X-Real-IP $remote_addr;
           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
