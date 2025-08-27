@@ -19,14 +19,18 @@ RUN dotnet restore "WebPicTweak.API/WebPicTweak.API.csproj"
 
 COPY . .
 
+RUN mkdir /out/ 
+
 RUN dotnet build WebPicTweak.API/WebPicTweak.API.csproj --configuration Debug --no-restore
-#RUN dotnet publish WebPicTweak.API/WebPicTweak.API.csproj --output /out --configuration Release --no-restore
+RUN dotnet publish WebPicTweak.API/WebPicTweak.API.csproj --output /out --configuration Release --no-restore
 
 ENTRYPOINT ["dotnet", "WebPicTweak.API.dll"]
 
-FROM base AS final
+
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 as runtime
+
 WORKDIR /app
-COPY --from=base /app/publish .
+COPY --from=debug /out/ /app
 ENTRYPOINT ["dotnet", "WebPicTweak.API.dll"]
 
 ## =============================
