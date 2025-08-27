@@ -19,10 +19,10 @@ namespace WebPicTweak.Application.Services.ImageServices
 
         public async Task<string> SaveAsync(IFormFile file)
         {
-            if (!Directory.Exists("/localdata/images"))
-                Directory.CreateDirectory("/localdata/images");
+            if (!Directory.Exists("localdata/images"))
+                Directory.CreateDirectory("localdata/images");
             string fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
-            string fullPath = Path.Combine("/localdata/images", fileName); 
+            string fullPath = Path.Combine("localdata/images", fileName); 
             using (FileStream fs = new FileStream(fullPath, FileMode.Create, FileAccess.Write, FileShare.None))
             {
                 
