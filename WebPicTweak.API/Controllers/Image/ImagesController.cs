@@ -36,7 +36,7 @@ namespace WebPicTweak.API.Controllers.Image
         }
 
 
-        [HttpDelete]
+        [HttpPost]
         [ProducesResponseType((int)HttpStatusCode.Created)]
         public async Task<ActionResult<JpegResponse>> UploadImage([FromForm] JpegRequest image)
         {
@@ -67,7 +67,7 @@ namespace WebPicTweak.API.Controllers.Image
             }
         }
 
-        [HttpPost]
+        [HttpDelete]
         [ProducesResponseType((int)HttpStatusCode.Created)]
         public async Task<ActionResult<JpegResponse>> ReadEXIFFromImage(string file)
         {
