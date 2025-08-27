@@ -8,14 +8,14 @@ namespace WebPicTweak.Application.Services.ImageServices
 {
     public class ImageStorage: IImageStorage
     {
-        private readonly string _basePath;
-        public ImageStorage(IOptions<StorageOptions> options)
-        {
-            _basePath = options.Value.ImagesStorage;
+        //private readonly string _basePath;
+        //public ImageStorage(IOptions<StorageOptions> options)
+        //{
+        //    _basePath = options.Value.ImagesStorage;
 
-            if (!Directory.Exists(_basePath))
-                Directory.CreateDirectory("/localdata/images");
-        }
+        //    if (!Directory.Exists(_basePath))
+        //        Directory.CreateDirectory("/localdata/images");
+        //}
 
         public async Task<string> SaveAsync(IFormFile file)
         {
