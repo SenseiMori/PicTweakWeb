@@ -11,12 +11,12 @@ export const normalizeImage = (raw) => {
     if (!raw || typeof raw !== 'object') return null;
 
     return {
-        id: raw.id || raw.Id || null,
-        url: raw.url || raw.Url || raw.filePath || raw.FilePath || null,
-        fileName: raw.fileName || raw.FileName || raw.imageName || 'Без названия',
+        fileName: raw.fileName || raw.FileName || 'Без названия',
         width: raw.width || raw.Width || null,
         height: raw.height || raw.Height || null,
-        size: raw.size || raw.Size || raw.fileSize || null,
+        size: raw.size || raw.Size || null,
+        url: raw.url || raw.Url || null,
+        uploadedAt: raw.uploadedAt ? new Date(raw.uploadedAt) : null,
     };
 };
 
@@ -36,11 +36,43 @@ export const formatBytes = (bytes) => {
 };
 
 /**
- * Generates a unique key for image components
- * @param {Object} image - Image object
- * @param {number} index - Fallback index
- * @returns {string} Unique key
+ * Formats date to human-readable string
+ * @param {Date} date - Date object
+ * @returns {string} Formatted date (e.g., "15:00 on June 30th 2025")
  */
-export const generateImageKey = (image, index = 0) => {
-    return image.id || `${image.url}_${image.fileName}_${index}`;
+export const formatDate = (date) => {
+    if (!date) return '';
+    return date.toLocaleString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric',
+        hour12: false,
+    }).replace(',', ' on');
+};
+
+/**
+ * Handles API errors consistently
+ * @param {Response} response - Fetch response object
+ * @returns {Promise<string>} Error message
+ */
+export const handleApiError = async (response) => {
+    let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+
+    try {
+        const responseText = await response.text();
+        if (!responseText) return errorMessage;
+
+        try {
+            const errorData = JSON.parse(responseText);
+            errorMessage = errorData.error || errorData.message || responseText;
+        } catch {
+            errorMessage = responseText;
+        }
+    } catch (textError) {
+        console.error('Failed to read response:', textError);
+    }
+
+    return errorMessage;
 };

@@ -6,8 +6,25 @@ services:
     build:
       context: .
       dockerfile: ./WebPicTweak.API/Dockerfile
-        
+    environment:
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=webpictweak_db;Username=webpictweak_user;Password=secure_password_here"
+    depends_on:
+      - postgres
 
+
+  postgres:
+    image: postgres:15
+    container_name: webpictweak_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: webpictweak_user
+      POSTGRES_PASSWORD: secure_password_here
+      POSTGRES_DB: webpictweak_db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+        
   client:
     image: client
     build:
@@ -69,6 +86,8 @@ volumes:
   cert_volume: {}
   acme_challenge: {}
   react_build: {}
+  pgdata: {}
+
   
 configs:
   nginx-defaultserver:

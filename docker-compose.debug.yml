@@ -17,13 +17,24 @@ services:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro  
       - './localdata/images:/data/images'
+
+  postgres:
+    image: postgres:latest
+    container_name: webpictweak_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: webpictweak_user
+      POSTGRES_PASSWORD: secure_password_here
+      POSTGRES_DB: webpictweak_db
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
   
   client:
     image: client
-    ports:
-      - "5002:3000"
     build:
-      context: ./Frontend/frontend
+      context: ./web
       dockerfile: Dockerfile
  
 
@@ -37,6 +48,9 @@ services:
     depends_on:
       - backend
       - client
+      
+volumes:
+  db_data: {}
 
 configs:
    nginx-defaultserver:
@@ -55,28 +69,33 @@ configs:
          server_name localhost;
 
 
-         location / {
-          proxy_pass http://client;
-          proxy_set_header Host $host;
-          proxy_set_header X-Real-IP $remote_addr;
-          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-          proxy_set_header X-Forwarded-Proto $scheme;
-         }
-
-        location /api/ {
-          proxy_pass http://backend/api/;
-          proxy_set_header Host $host;
-          proxy_set_header X-Real-IP $remote_addr;
-          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-          proxy_set_header X-Forwarded-Proto $scheme;
-         }
-
+          location / {
+        proxy_pass http://client;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
         
         }
-    
-         
-  
 
-
-
-
+          location /api/ {
+        proxy_pass http://backend;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        }
+        
+          location /archiveHub {
+        proxy_pass http://backend/archiveHub;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        }
+        
+        

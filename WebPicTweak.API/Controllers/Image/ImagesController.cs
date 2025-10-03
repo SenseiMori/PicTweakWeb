@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Net;
-using WebPicTweak.API.DTOs;
-using WebPicTweak.API.DTOs.Const;
-using WebPicTweak.Application.Services.ImageServices.RemoveExif.JPG;
+using WebPicTweak.API.DTOs.Images;
+using WebPicTweak.Application.Abstractions;
+using WebPicTweak.Application.Services.ImageServices.ModifierProcess;
 using WebPicTweak.Core.Abstractions.Image;
-
+using WebPicTweak.Core.Abstractions.Log;
+using WebPicTweak.Core.Models.Image;
 
 namespace WebPicTweak.API.Controllers.Image
 {
@@ -12,77 +13,92 @@ namespace WebPicTweak.API.Controllers.Image
     [ApiController]
     public class ImagesController : ControllerBase
     {
-        private readonly IImageStorage _imageStorage;
         private readonly ILogger<ImagesController> _logger;
-        private readonly IJpegInfo _jpegInfo;
-        private readonly JPGFile _jpgFile;
+        private readonly IImageModifierProcess _imageModifierProcess;
+        private readonly ISessionStore _sessionStore;
 
-        public ImagesController(IImageStorage imageStorage, ILogger<ImagesController> logger, IJpegInfo jpegInfo, JPGFile jPGFile)
+        public ImagesController(ILogger<ImagesController> logger,
+                                IImageProcessingBackgroundService backgroundTaskQueue,
+                                IArchiveBuilder archiveBuilder,
+                                ISessionStore sessionStore,
+                                ILog sessionLog,
+                                IImageModifierProcess imageModifierProcess,
+                                IImageStorage imageStorage)
         {
-            _imageStorage = imageStorage;
             _logger = logger;
-            _jpegInfo = jpegInfo;
-            _jpgFile = jPGFile;
-        }
-
-        [HttpGet]
-        public ActionResult<string> Get()
-        {
-            Random rnd = new Random();
-
-            int num = rnd.Next(1, 100);
-
-            return "Image service is running" + num;
+            _sessionStore = sessionStore;
+            _imageModifierProcess = imageModifierProcess;
         }
 
 
         [HttpPost]
         [ProducesResponseType((int)HttpStatusCode.Created)]
-        public async Task<ActionResult<JpegResponse>> UploadImage([FromForm] JpegRequest image)
+        public async Task<ActionResult<JpegResponse>> UploadImage([FromForm] JpegRequest JpegFiles, CancellationToken ct)
         {
-            //validation: тип файла, вес (не больше 5мб пр.), исполняемость файла,
+            var User = Request.Form["user"].FirstOrDefault();
+
+            if (string.IsNullOrEmpty(User) || !Guid.TryParse(User, out var UserGuid))
+            {
+                return BadRequest($"Пользователь:{User} не найден");
+            }
             try
             {
-                if (image.JpegFile.Length > JpegConsts.MaxSize)
+                Guid UserId = Guid.Parse(User);
+                List<JpegData> files = JpegFiles.Files.Select((file, index) => new JpegData
                 {
-                    return BadRequest("Слишком большой файл");
-                }
+                    FileData = file,
+                    FileName = file.FileName,
+                    Height = JpegFiles.Height[index],
+                    Width = JpegFiles.Width[index],
+                    Size = file.Length,
+                }).ToList();
 
-                string pathToSavedJpeg = await _imageStorage.SaveAsync(image.JpegFile);
-                var jpeg = await _jpegInfo.GetInfo(pathToSavedJpeg);
-
-                var imageDTO = new JpegResponse
-                {
-                    FileName = jpeg.FileName,
-                    Width = jpeg.Width,
-                    Height = jpeg.Height,
-                };
-                _logger.LogInformation("Image uploaded successfully. FileName: {FileName}, Width: {Width}, Height: {Height}", imageDTO.FileName, imageDTO.Width, imageDTO.Height);
-                return CreatedAtAction(nameof(UploadImage), pathToSavedJpeg);
+                await _imageModifierProcess.ModifierProcessAsync(UserId, files, JpegFiles.Options, ct);
+                return Ok(new { success = true });
+            }
+            catch (TaskCanceledException ex)
+            {
+                _logger.LogInformation(ex, "Image processing task cancelled by client.");
+                return StatusCode(499, new { error = "Request cancelled by client." });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, ex.Message);
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+                _logger.LogError(ex, "An unexpected error occurred during image upload: {Message}", ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, new { error = "An internal server error occurred." });
             }
         }
 
-        [HttpDelete]
-        [ProducesResponseType((int)HttpStatusCode.Created)]
-        public async Task<ActionResult<JpegResponse>> ReadEXIFFromImage(string file)
+
+
+
+        [HttpGet("{sessionId:guid}")]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        public ActionResult DownloadArchive(Guid sessionId)
         {
-            var markers = await _jpgFile.GetMarkersAppSegment(file);
-
-            foreach (var marker in markers)
+            try
             {
-                _logger.LogInformation("Marker: {Marker}", marker);
                 
+                var session = _sessionStore.GetSession(sessionId);
+                if (session == null)
+                {
+                    _logger.LogWarning("Ошибка скачивания: сессия {SessionId} не найдена", sessionId);
+                    return NotFound(new { error = "Архив не найден." });
+                }
+                const string contentType = "application/zip";
+
+                return PhysicalFile(session.PathToZip, contentType);
             }
-            //_logger.LogInformation("Image uploaded successfully. FileName: {FileName}, Width: {Width}, Height: {Height}", imageDTO.FileName, imageDTO.Width, imageDTO.Height);
-
-            return Ok();    
-
-
+            catch (FileNotFoundException ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, new { error = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Ошибка скачивания: сессия {SessionId} не найдена", sessionId);
+                return StatusCode(StatusCodes.Status500InternalServerError, new { error = "При скачивании что-то пошло не так." });
+            }
         }
+
     }
 }

@@ -1,18 +1,25 @@
 ﻿using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Processing;
-using WebPicTweak.Application.Services.ImageServices.Const;
+using WebPicTweak.Core.Abstractions.Image;
+using WebPicTweak.Core.Const;
 
 namespace WebPicTweak.Application.Services.ImageServices.Resize
 {
-    public class ImageResize
+    public class ImageResize: IImageHandlerAsync
     {
-        Scaler scaler = new Scaler();
-        public async Task<byte[]> ResizeJPG(string path, SizeScale scale)
+        private readonly SizeScale _scale;
+        private readonly Scaler _scaler = new Scaler();
+
+        public ImageResize(SizeScale scale)
+        {
+            _scale = scale;
+        }
+        public async Task<byte[]> Handler(string path)
         {
             using (Image image = await Image.LoadAsync(path))
             {
-                (int, int) widthAndHeight = scaler.GetScaledSize(image.Width, image.Height, scale);
+                (int, int) widthAndHeight = _scaler.GetScaledSize(image.Width, image.Height, _scale);
                 using (MemoryStream imageStream = new MemoryStream())
                 {
                     image.Mutate(x => x.Resize(widthAndHeight.Item1, widthAndHeight.Item2));

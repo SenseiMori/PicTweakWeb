@@ -1,21 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" Sdk="Microsoft.Docker.Sdk">
-	<PropertyGroup Label="Globals">
-		<ProjectVersion>2.1</ProjectVersion>
-		<DockerTargetOS>Linux</DockerTargetOS>
-		<DockerPublishLocally>False</DockerPublishLocally>
-		<ProjectGuid>1b5d1dff-3684-4fd2-bf27-42771adf9ee1</ProjectGuid>
-		<DockerLaunchAction>LaunchBrowser</DockerLaunchAction>
-		<DockerServiceUrl>{Scheme}://localhost:{ServicePort}/swagger</DockerServiceUrl>
-		<DockerComposeBaseFilePath>docker-compose</DockerComposeBaseFilePath>
-		<DockerServiceName>webpictweak</DockerServiceName>
-	</PropertyGroup>
-	<ItemGroup>
-		<None Include="docker-compose.debug.yml" />
-		<None Include="docker-compose.override.yml">
-			<DependentUpon>docker-compose.yml</DependentUpon>
-		</None>
-		<None Include="docker-compose.yml" />
-		<None Include=".dockerignore" />
-	</ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectVersion>2.1</ProjectVersion>
+    <DockerTargetOS>Linux</DockerTargetOS>
+    <DockerPublishLocally>False</DockerPublishLocally>
+    <ProjectGuid>1b5d1dff-3684-4fd2-bf27-42771adf9ee1</ProjectGuid>
+    <DockerLaunchAction>LaunchBrowser</DockerLaunchAction>
+    <DockerServiceUrl>{Scheme}://localhost:{ServicePort}/swagger</DockerServiceUrl>
+    <DockerComposeBaseFilePath>docker-compose.debug</DockerComposeBaseFilePath>
+    <DockerServiceName>webpictweak</DockerServiceName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Front|AnyCPU'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='front + back|AnyCPU'" />
+  <ItemGroup>
+    <None Include="docker-compose.debug.yml" />
+    <None Include="docker-compose.override.yml">
+      <DependentUpon>docker-compose.yml</DependentUpon>
+    </None>
+    <None Include="docker-compose.yml" />
+    <None Include=".dockerignore" />
+  </ItemGroup>
 </Project>

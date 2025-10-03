@@ -1,13 +1,15 @@
-﻿namespace WebPicTweak.Application.Services.ImageServices.RemoveExif.JPG
+﻿using System.Diagnostics;
+using WebPicTweak.Core.Abstractions.Image;
+
+namespace WebPicTweak.Application.Services.ImageServices.RemoveExif.JPG
 {
-    public class JPGFile
+    public class JPGFile : IImageHandlerAsync
     {
         private readonly HashSet<byte> _markers = new JPGMarkers().markers;
 
-        public async Task<byte[]> GetJPGWithoutAppSegments(string file)
+        public async Task<byte[]> Handler(string file)
         {
             JPGMarkers jPGMarkers = new JPGMarkers();
-
             List<byte> cleanImageData = new List<byte>();
             using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize: 4096, useAsync: true))
             {
@@ -39,6 +41,9 @@
         }
         public async Task<List<byte>> GetMarkersAppSegment(string file)
         {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
             List<byte> markers = new List<byte>();
             JPGMarkers jPGMarkers = new JPGMarkers();
             using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize: 4096, useAsync: true))
@@ -48,7 +53,7 @@
                     byte[] buffer = new byte[2];
                     while (binaryReader.BaseStream.Position != binaryReader.BaseStream.Length)
                     {
-                        int read = await binaryReader.BaseStream.ReadAsync(buffer);
+                        await binaryReader.BaseStream.ReadAsync(buffer);
                         if (buffer[0] == 0xFF && _markers.Contains(buffer[1]))
                         {
                             int appLength = binaryReader.ReadUInt16();
@@ -60,7 +65,6 @@
                 }
             }
         }
-
         public ushort ShiftBytes(int value)
         {
             byte secondByte = (byte)(value & 0xFF);
@@ -69,31 +73,5 @@
             return (ushort)result;
         }
 
-    }
-    public class JPGMetadataReader
-    {
-        JPGFile JPGFile { get; set; }
-
-        public JPGMetadataReader()
-        {
-            JPGFile = new JPGFile();
-        }
-
-        public async Task<byte[]> DeleteExifMarkers(string pathToFile) => await JPGFile.GetJPGWithoutAppSegments(pathToFile);
-
-        #region Find Markers
-        public async Task<List<byte>> ReadExifFromImage(string file)
-        {
-            List<byte> markersList = new List<byte>();
-            List<byte> data = new List<byte>();
-            data = await JPGFile.GetMarkersAppSegment(file);
-
-            foreach (byte marker in data)
-            {
-                markersList.Add(marker);
-            }
-            return markersList;
-        }
-        #endregion
     }
 }

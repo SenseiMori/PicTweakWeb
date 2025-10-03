@@ -1,6 +1,6 @@
 ﻿using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
-using WebPicTweak.Application.Services.ImageServices.Const;
+using WebPicTweak.Core.Const;
 
 namespace WebPicTweak.Application.Services.ImageServices.Compress
 {
@@ -17,7 +17,6 @@ namespace WebPicTweak.Application.Services.ImageServices.Compress
                 }
             }
         }
-
         public JpegEncoder GetCompressLevel(CompressLevel level)
         {
             var encoder = new JpegEncoder
@@ -25,7 +24,6 @@ namespace WebPicTweak.Application.Services.ImageServices.Compress
                 Quality = (int)level,
                 SkipMetadata = true,
             };
-
             return encoder;
         }
         public string GetBytesReadable(long num)
@@ -33,19 +31,19 @@ namespace WebPicTweak.Application.Services.ImageServices.Compress
             long absolute_num = (num < 0 ? -num : num);
             string suffix;
             double readable;
-            if (absolute_num >= 0x100000) // Megabyte
+            if (absolute_num >= 0x100000)
             {
                 suffix = "MB";
                 readable = (num >> 10);
             }
-            else if (absolute_num >= 0x400) // Kilobyte
+            else if (absolute_num >= 0x400)
             {
                 suffix = "KB";
                 readable = num;
             }
             else
             {
-                return num.ToString("0 B"); // Byte
+                return num.ToString("0 B");
             }
             readable = (readable / 1024);
             return readable.ToString("0.#") + suffix;

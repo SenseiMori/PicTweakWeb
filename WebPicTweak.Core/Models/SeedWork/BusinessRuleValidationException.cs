@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace WebPicTweak.Core.Models.SeedWork
+﻿namespace WebPicTweak.Core.Models.SeedWork
 {
     public class BusinessRuleValidationException : Exception
     {
         public IBusinessRule BrokenRule { get; }
-
         public string Details { get; }
 
         public BusinessRuleValidationException(IBusinessRule brokenRule) : base(brokenRule.Message)
@@ -17,7 +10,6 @@ namespace WebPicTweak.Core.Models.SeedWork
             BrokenRule = brokenRule;
             this.Details = brokenRule.Message;
         }
-
         public override string ToString()
         {
             return $"{BrokenRule.GetType().FullName}: {BrokenRule.Message}";

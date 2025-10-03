@@ -1,4 +1,4 @@
-﻿using WebPicTweak.Application.Services.ImageServices.Const;
+﻿using WebPicTweak.Core.Const;
 
 namespace WebPicTweak.Application.Services.ImageServices.Resize
 {
