@@ -5,6 +5,6 @@
 
 # Как запустить
 
-Склонировать репозиторий
-В корне репозитория выполнить команду cd web; npm run dev
-Затем cd ../WebPicTweak.API; dotnet run
+- Склонировать репозиторий
+- В корне репозитория выполнить команду cd web; npm run dev
+- Затем cd ../WebPicTweak.API; dotnet run
