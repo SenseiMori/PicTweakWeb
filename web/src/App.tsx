@@ -18,14 +18,14 @@ function App() {
             <AuthProvider>
                 <QueryClientProvider client={queryClient}>
                     <Routes>
-                            <Route path="/" element={<ModifierPage />}>
+                            <Route path="/" element={<MainLayout />}>
                             <Route path="auth" element={<AuthPage />} />
                             <Route path="modifier" element={<ModifierPage />} />
                         {/* <Route path="/admin/logs" element={<AdminPage />} />*/}
 
                         </Route>
-                    </Routes>
-                </QueryClientProvider>
+                    </Routes> 
+            </QueryClientProvider> 
             </AuthProvider>
     );
 }

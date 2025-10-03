@@ -1,5 +1,4 @@
-﻿import { Link } from "react-router-dom"; // исправил импорт!
-
+﻿import { Link } from "react-router-dom"; 
 export const MainNav = () => {
     return (
         <nav className="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
@@ -15,9 +14,9 @@ export const MainNav = () => {
                     <Link className="navbar-brand" to="/auth">
                         Личный кабинет
                     </Link>
-                    <Link className="navbar-brand" to="/admin/logs">
+                    {/* <Link className="navbar-brand" to="/admin/logs">
                         Тестовая панель аналитики
-                    </Link>
+                    </Link>*/}
                 </div>
 
                 <div className="d-flex align-items-center">
